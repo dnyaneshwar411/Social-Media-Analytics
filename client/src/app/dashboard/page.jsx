@@ -1,15 +1,16 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RecentSales } from "@/components/core/recent-sales"
-import { OverviewHeaderCards } from "@/components/overview-views/OverviewHeaderCards"
-import OverviewPieChart from "@/components/overview-views/OverviewPieChart"
-import OverviewChartMonthWise from "@/components/overview-views/OverviewChartMonthWise"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RecentSales } from "@/components/core/recent-sales";
+import { OverviewHeaderCards } from "@/components/overview-views/OverviewHeaderCards";
+import OverviewPieChart from "@/components/overview-views/OverviewPieChart";
+import OverviewChartMonthWise from "@/components/overview-views/OverviewChartMonthWise";
 
 export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        {/* <h2 className="text-3xl font-bold tracking-tight bg-[#c7a26b]">Chat Bot</h2> */}
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="bg-muted">
@@ -47,5 +48,5 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
