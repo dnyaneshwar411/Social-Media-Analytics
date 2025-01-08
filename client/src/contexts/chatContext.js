@@ -7,7 +7,7 @@ const ChatContext = createContext();
 export function ChatProvider({ children }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const addMessage = (message) => {
     setMessages((prev) => [...prev, message]);
   };
@@ -19,7 +19,7 @@ export function ChatProvider({ children }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-
+    setLoading(true);
     // Add user's message
     addMessage({
       id: Date.now(),
@@ -43,23 +43,26 @@ export function ChatProvider({ children }) {
         }),
       });
       const data = await res.json();
-      console.log(data) 
-      // Add response message
+      console.log(data);
+      const textoutput =
+        data?.outputs?.[0]?.outputs?.[0]?.results?.message?.data?.text ||
+        "No response";
       addMessage({
         id: Date.now() + 1,
         role: "assistant",
-        content: data?.message || "No response",
+        content: textoutput,
       });
     } catch (error) {
       console.error(error);
     } finally {
       setInput("");
+      setLoading(false);
     }
   };
 
   return (
     <ChatContext.Provider
-      value={{ messages, addMessage, input, handleInputChange, handleSubmit }}
+      value={{ messages, addMessage, input, handleInputChange, handleSubmit,loading }}
     >
       {children}
     </ChatContext.Provider>
