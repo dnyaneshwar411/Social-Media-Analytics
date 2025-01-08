@@ -9,11 +9,9 @@ export default function Header() {
           SocialAnalytics
         </Link>
         <nav className="hidden md:flex space-x-4">
-          <Link href="#features" className="text-muted-foreground hover:text-primary">Features</Link>
-          <Link href="#testimonials" className="text-muted-foreground hover:text-primary">Testimonials</Link>
-          <Link href="#pricing" className="text-muted-foreground hover:text-primary">Pricing</Link>
+
         </nav>
-        <Button>Get Started</Button>
+        <Link href="/dashboard">Dashboard</Link>
       </div>
     </header>
   )

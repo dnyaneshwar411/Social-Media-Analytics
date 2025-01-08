@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button"
 
 export default function Hero() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary to-primary-foreground text-primary-foreground">
-      <div className="container mx-auto text-center">
+    <section className="min-h-[70vh] py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#123524] to-[#3E7B27] text-primary-foreground">
+      <div className="container mx-auto text-center mt-20">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
           Unlock the Power of Your Social Media Data
         </h1>

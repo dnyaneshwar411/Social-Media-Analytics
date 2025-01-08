@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const ChatContext = createContext();
 
@@ -8,9 +8,52 @@ export function ChatProvider({ children }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const addMessage = (message) => {
-    setMessages((prev) => [...prev, message]);
+  const [sessions, setSessions] = useState([]);
+  const [currentSession, setCurrentSession] = useState(null);
+
+  // Helper: Save current session's messages to localStorage
+  const saveMessagesToLocalStorage = (sessionId, updatedMessages) => {
+    localStorage.setItem(`session-${sessionId}`, JSON.stringify(updatedMessages));
   };
+
+  // Add message to current session
+  const addMessage = (message) => {
+    setMessages((prev) => {
+      const updatedMessages = [...prev, message];
+      saveMessagesToLocalStorage(currentSession, updatedMessages);
+      return updatedMessages;
+    });
+  };
+
+  // Switch session
+  const switchSession = (sessionId) => {
+    setCurrentSession(sessionId);
+    const storedMessages = JSON.parse(localStorage.getItem(`session-${sessionId}`)) || [];
+    setMessages(storedMessages);
+  };
+
+  // Create a new session
+  const createNewSession = () => {
+    const newSessionId = Date.now();
+    const newSession = { id: newSessionId, title: `Session ${sessions.length + 1}` };
+    setSessions((prev) => [...prev, newSession]);
+    setCurrentSession(newSessionId);
+    setMessages([]);
+    localStorage.setItem("sessions", JSON.stringify([...sessions, newSession]));
+  };
+
+  // Retrieve sessions and messages on load
+  useEffect(() => {
+    const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
+    setSessions(storedSessions);
+
+    if (storedSessions.length > 0) {
+      const firstSession = storedSessions[0];
+      setCurrentSession(firstSession.id);
+      const storedMessages = JSON.parse(localStorage.getItem(`session-${firstSession.id}`)) || [];
+      setMessages(storedMessages);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -20,7 +63,6 @@ export function ChatProvider({ children }) {
     e.preventDefault();
     if (!input.trim()) return;
     setLoading(true);
-    // Add user's message
     addMessage({
       id: Date.now(),
       role: "user",
@@ -28,8 +70,7 @@ export function ChatProvider({ children }) {
     });
 
     try {
-      // Send request to backend
-      const res = await fetch("http://localhost:5000/api/run-flow", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,10 +84,8 @@ export function ChatProvider({ children }) {
         }),
       });
       const data = await res.json();
-      console.log(data);
       const textoutput =
-        data?.outputs?.[0]?.outputs?.[0]?.results?.message?.data?.text ||
-        "No response";
+        data?.outputs?.[0]?.outputs?.[0]?.results?.message?.data?.text || "No response";
       addMessage({
         id: Date.now() + 1,
         role: "assistant",
@@ -62,7 +101,18 @@ export function ChatProvider({ children }) {
 
   return (
     <ChatContext.Provider
-      value={{ messages, addMessage, input, handleInputChange, handleSubmit,loading }}
+      value={{
+        messages,
+        addMessage,
+        input,
+        handleInputChange,
+        handleSubmit,
+        loading,
+        sessions,
+        currentSession,
+        createNewSession,
+        switchSession,
+      }}
     >
       {children}
     </ChatContext.Provider>
