@@ -28,12 +28,6 @@ export default function DashboardPage() {
           <OverviewHeaderCards />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
-              <OverviewPieChart />
-            </Card>
-            <Card className="col-span-3">
-              <OverviewPieChart />
-            </Card>
-            <Card className="col-span-4">
               <CardHeader>
                 <CardTitle>Overview</CardTitle>
               </CardHeader>
@@ -42,12 +36,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
             <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RecentSales />
-              </CardContent>
+              <OverviewPieChart />
             </Card>
           </div>
         </TabsContent>

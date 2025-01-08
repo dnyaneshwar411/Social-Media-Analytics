@@ -1,63 +1,101 @@
-import React from "react";
-import ReactMarkdown from "react-markdown";
-import { useChat } from "@/contexts/chatContext";
-import Input from "@/components/ui/input";
-import Button from "@/components/ui/button";
+'use client'
 
-import { Paperclip, ArrowUp } from "lucide-react";
+import { useChat } from "@/contexts/chatContext"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Card, CardContent } from "@/components/ui/card"
+import { Bot, Send, User } from 'lucide-react'
+import { marked } from "marked"
+
 export default function ChatInterface() {
-  const { messages, input, handleInputChange, handleSubmit, loading } =
-    useChat();
+  const { messages, loading } = useChat()
 
   return (
-    <div className="flex flex-col h-full w-full ">
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 gap-3 flex w-full justify-between border  border-[#a6a1a1] rounded-md text-white"
-      >
-        <input
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Type your message"
-          className="w-full  px-2 py-1 border-none outline-none border-[#ffffff] text-black"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white rounded px-4 py-2"
-        >
-          Send
-        </button>
-      </form>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {loading && (
-          <div className="flex justify-start items-center">
-            <div className="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2 border-blue-500"></div>
-            <span>Processing...</span>
-          </div>
-        )}
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex ${
-              m.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
+    <Card className="w-full flex flex-col h-[calc(100vh-2rem)]">
+      <ScrollArea className="flex-1 p-4 !rounded-0">
+        <div className="space-y-4">
+          {messages.map((message) => (
             <div
-              className={`rounded-lg p-2 max-w-[80%] ${
-                m.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
+              key={message.id}
+              className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'
+                }`}
             >
-              <pre className="whitespace-pre-wrap text-sm text-gray-800">
-                {m.content}
-              </pre>
-              {/* <ReactMarkdown>{m.content}</ReactMarkdown> */}
+              {message.role === 'assistant' && (
+                <Avatar>
+                  <AvatarFallback className="bg-primary/10">
+                    <Bot className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              <div
+                className={`flex flex-col max-w-[80%] ${message.role === 'user' ? 'items-end' : 'items-start'
+                  }`}
+              >
+                <div
+                  className={`rounded-lg px-4 py-2 ${message.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted'
+                    }`}
+                >
+                  <div
+                    dangerouslySetInnerHTML={{ __html: marked(message.content) }}
+                    className="whitespace-pre-wrap text-sm"
+                  />
+                </div>
+              </div>
+              {message.role === 'user' && (
+                <Avatar>
+                  <AvatarFallback className="bg-primary/10">
+                    <User className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+          ))}
+          {loading && (
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarFallback className="bg-primary/10">
+                  <Bot className="h-5 w-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="bg-muted rounded-lg px-4 py-2">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce [animation-delay:0.4s]" />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+      {messages.length === 0 && <div className="h-full text-[20px] md:text-[32px] font-bold flex items-center justify-center">
+        No Chats yet
+      </div>}
+      <UserInput />
+    </Card>
+  )
+}
+
+function UserInput() {
+  const { input, handleInputChange, handleSubmit, loading } = useChat()
+
+  return <CardContent className="p-4 border-t">
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <Input
+        value={input}
+        onChange={handleInputChange}
+        placeholder="Type your message..."
+        className="flex-1"
+        disabled={loading}
+      />
+      <Button type="submit" disabled={loading}>
+        <Send className="h-4 w-4 mr-2" />
+        Send
+      </Button>
+    </form>
+  </CardContent>
 }
