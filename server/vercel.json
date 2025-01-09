@@ -6,6 +6,5 @@
     {
       "destination": "/api "
     }
-  ],
-  "gitIgnore": true
+  ]
 }
